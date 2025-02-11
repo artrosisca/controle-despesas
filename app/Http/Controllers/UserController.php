@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
 class UserController extends Controller
@@ -18,12 +19,14 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'role' => 'required|string|in:user,admin',
         ]);
 
         $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => bcrypt($request->input('password')),
+            'role' => $request->input('role'),
         ]);
 
         return response()->json($user, 201);
@@ -52,6 +55,12 @@ class UserController extends Controller
     public function destroy($id)
     {
         $user = User::findOrFail($id);
+
+        // Verifica se o usuário autenticado é o mesmo que está tentando deletar a conta ou se é um administrador
+        if (Auth::user()->id !== $user->id && Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $user->delete();
 
         return response()->json(null, 204);
@@ -66,7 +75,12 @@ class UserController extends Controller
             return response()->json(['message' => 'Already friends'], 400);
         }
 
-        $user->addFriend($friend);
+        // Ensure id1 < id2
+        if ($user->id < $friend->id) {
+            $user->addFriend($friend);
+        } else {
+            $friend->addFriend($user);
+        }
 
         return response()->json(['message' => 'Friend added successfully'], 201);
     }
@@ -80,7 +94,12 @@ class UserController extends Controller
             return response()->json(['message' => 'Not friends'], 400);
         }
 
-        $user->removeFriend($friend);
+        // Ensure id1 < id2
+        if ($user->id < $friend->id) {
+            $user->removeFriend($friend);
+        } else {
+            $friend->removeFriend($user);
+        }
 
         return response()->json(['message' => 'Friend removed successfully'], 200);
     }

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shared_expense_participants_type', function (Blueprint $table) {
+        Schema::create('shared_expense_participants', function (Blueprint $table) {
             $table->id();
             $table->foreignId('expense_id')->constrained('expenses')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');

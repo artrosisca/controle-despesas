@@ -11,9 +11,12 @@ Route::middleware('api')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
+    // Rota para obter detalhes do usuário autenticado
+    Route::get('/user', [UserController::class, 'me'])->middleware('auth:sanctum');
+
     // Rotas para CRUD de usuários
-    Route::get('/users', [UserController::class, 'index'])->middleware('auth:sanctum');
-    Route::post('/users', [UserController::class, 'store'])->middleware('auth:sanctum');
+    Route::get('/users', [UserController::class, 'index'])->middleware('auth:sanctum', 'admin');
+    Route::post('/users', [UserController::class, 'store'])->middleware('auth:sanctum', 'admin');
     Route::get('/users/{id}', [UserController::class, 'show'])->middleware('auth:sanctum');
     Route::put('/users/{id}', [UserController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->middleware('auth:sanctum');

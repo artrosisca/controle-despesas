@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Expense extends Model
 {
-    use HasFacatory;
+    use HasFactory;
 
     protected $fillable = [
         'user_id',
