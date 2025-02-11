@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Expense;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseController extends Controller
 {
@@ -82,8 +83,22 @@ class ExpenseController extends Controller
     public function destroy($id)
     {
         $expense = Expense::findOrFail($id);
+
+        // Verifica se o usuário autenticado é o criador da despesa ou se é um administrador
+        if (Auth::user()->id !== $expense->user_id && Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $expense->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function userExpenses()
+    {
+        $user = Auth::user();
+        $expenses = $user->expenses; // Assumindo que há uma relação definida no modelo User
+
+        return response()->json($expenses);
     }
 }

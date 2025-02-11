@@ -23,7 +23,7 @@ Route::middleware('api')->group(function () {
 
     // Rotas para adicionar e remover amigos
     Route::post('/users/{id}/add-friend', [UserController::class, 'addFriend'])->middleware('auth:sanctum');
-    Route::post('/users/{id}/remove-friend', [UserController::class, 'removeFriend'])->middleware('auth:sanctum');
+    Route::delete('/users/{id}/remove-friend', [UserController::class, 'removeFriend'])->middleware('auth:sanctum');
 
     // Rotas para CRUD de despesas
     Route::get('/expenses', [ExpenseController::class, 'index'])->middleware('auth:sanctum');
@@ -31,4 +31,7 @@ Route::middleware('api')->group(function () {
     Route::get('/expenses/{id}', [ExpenseController::class, 'show'])->middleware('auth:sanctum');
     Route::put('/expenses/{id}', [ExpenseController::class, 'update'])->middleware('auth:sanctum');
     Route::delete('/expenses/{id}', [ExpenseController::class, 'destroy'])->middleware('auth:sanctum');
+    
+    // Rota para listar despesas do usuário autenticado
+    Route::get('/user/expenses', [ExpenseController::class, 'userExpenses'])->middleware('auth:sanctum');
 });
